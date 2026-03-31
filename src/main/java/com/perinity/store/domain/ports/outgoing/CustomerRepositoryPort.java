@@ -18,6 +18,8 @@ public interface CustomerRepositoryPort {
 
   void deleteByCode(UUID code);
 
+  boolean existsByCode(UUID code);
+
   boolean existsByCpf(String cpf);
 
   boolean existsByEmail(String email);
