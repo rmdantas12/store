@@ -37,7 +37,7 @@ public class CustomerService implements CustomerUseCase {
     checkUniqueEmail(updatedCustomer);
 
     Optional.ofNullable(updatedCustomer.getFullName())
-        .ifPresent(existing::setFullAddress);
+        .ifPresent(existing::setFullName);
 
     Optional.ofNullable(updatedCustomer.getMotherName())
         .ifPresent(existing::setMotherName);
@@ -66,7 +66,7 @@ public class CustomerService implements CustomerUseCase {
   @Override
   @Transactional
   public void delete(UUID code) {
-    if (repository.existsByCode(code)) {
+    if (!repository.existsByCode(code)) {
       throw new CustomerNotFoundException();
     }
 
