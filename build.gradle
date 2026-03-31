@@ -39,13 +39,3 @@ compileJava {
 compileTestJava {
     options.encoding = 'UTF-8'
 }
-
-quarkus {
-    containerImage {
-        build = true
-        registry = "ghcr.io"
-        group = "rmdantas12"
-        name = "store"
-        tag = quarkus.application.version
-    }
-}
