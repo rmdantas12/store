@@ -28,12 +28,3 @@ jobs:
 
       - name: Run tests
         run: ./gradlew test
-
-      - name: SonarQube / SonarCloud analysis
-        if: ${{ github.event_name == 'push' || github.event_name == 'pull_request' }}
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
-          SONAR_PROJECT_KEY: ${{ vars.SONAR_PROJECT_KEY }}
-          SONAR_ORGANIZATION: ${{ vars.SONAR_ORGANIZATION }}
-        run: ./gradlew jacocoTestReport sonarqube
