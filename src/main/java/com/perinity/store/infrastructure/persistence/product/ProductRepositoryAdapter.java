@@ -2,6 +2,7 @@ package com.perinity.store.infrastructure.persistence.product;
 
 import com.perinity.store.domain.model.Product;
 import com.perinity.store.domain.ports.outgoing.ProductRepositoryPort;
+import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import lombok.RequiredArgsConstructor;
 
@@ -68,7 +69,7 @@ public class ProductRepositoryAdapter implements ProductRepositoryPort {
    */
   @Override
   public List<Product> findAll() {
-    return repository.listAll()
+    return repository.listAll(Sort.by("name"))
         .stream()
         .map(productPersistenceMapper::toDomain)
         .toList();
