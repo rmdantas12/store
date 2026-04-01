@@ -5,7 +5,7 @@ import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class DuplicateEmailExceptionMapperTest {
 
@@ -22,8 +22,14 @@ class DuplicateEmailExceptionMapperTest {
     try (Response response = mapper.toResponse(ex)) {
       assertEquals(Response.Status.CONFLICT.getStatusCode(), response.getStatus());
       final var entity = response.getEntity();
-      assertInstanceOf(ErrorResponse.class, entity);
-      assertEquals(DuplicateEmailException.DEFAULT_MESSAGE, ((ErrorResponse) entity).message());
+
+      if (!(entity instanceof ErrorResponse)) {
+        fail("Expected entity to be ErrorResponse but was: " + entity);
+      }
+
+      final var error = (ErrorResponse) entity;
+      assertEquals(DuplicateEmailException.DEFAULT_MESSAGE, error.message());
+      assertEquals(0, error.details().size());
     }
   }
 
