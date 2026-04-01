@@ -91,4 +91,5 @@ dependencies {
     testImplementation 'org.mockito:mockito-junit-jupiter'
     testImplementation 'io.quarkus:quarkus-jdbc-h2'
     testImplementation 'org.junit.jupiter:junit-jupiter-params'
+    testImplementation 'io.quarkus:quarkus-test-security'
 }
