@@ -2,26 +2,21 @@ sonarqube {
     properties {
         property 'sonar.projectName', 'store'
 
-        def projectKey = System.getenv('SONAR_PROJECT_KEY')
-        if (projectKey != null && !projectKey.isBlank()) {
-            property 'sonar.projectKey', projectKey
+        // Receber do CI (GitHub Actions secrets/vars)
+        if (System.getenv('SONAR_PROJECT_KEY') != null) {
+            property 'sonar.projectKey', System.getenv('SONAR_PROJECT_KEY')
+        }
+        if (System.getenv('SONAR_ORGANIZATION') != null) {
+            property 'sonar.organization', System.getenv('SONAR_ORGANIZATION')
+        }
+        if (System.getenv('SONAR_HOST_URL') != null) {
+            property 'sonar.host.url', System.getenv('SONAR_HOST_URL')
         }
 
-        def organization = System.getenv('SONAR_ORGANIZATION')
-        if (organization != null && !organization.isBlank()) {
-            property 'sonar.organization', organization
-        }
-
-        def hostUrl = System.getenv('SONAR_HOST_URL')
-        if (hostUrl != null && !hostUrl.isBlank()) {
-            if (!hostUrl.startsWith('http://') && !hostUrl.startsWith('https://')) {
-                hostUrl = 'https://' + hostUrl
-            }
-            property 'sonar.host.url', hostUrl
-        }
-
+        // Cobertura JaCoCo (XML)
         property 'sonar.coverage.jacoco.xmlReportPaths', "${layout.buildDirectory.get()}/reports/jacoco/test/jacocoTestReport.xml"
 
+        // Excluir do cálculo de cobertura o que não faz sentido testar diretamente
         property 'sonar.coverage.exclusions', [
             '**/infrastructure/web/**',
             '**/infrastructure/persistence/**',
