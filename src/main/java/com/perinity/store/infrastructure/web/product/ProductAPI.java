@@ -1,5 +1,6 @@
 package com.perinity.store.infrastructure.web.product;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -32,6 +33,7 @@ import java.util.UUID;
 public interface ProductAPI {
 
   @POST
+  @RolesAllowed("admin")
   @Operation(summary = "Create a new product", description = "Creates a new product and returns the created resource")
   @APIResponses(
       {
@@ -46,6 +48,7 @@ public interface ProductAPI {
 
   @PUT
   @Path("/{code}")
+  @RolesAllowed("admin")
   @Operation(summary = "Update an existing product", description = "Updates a product by its code")
   @APIResponses(
       {
@@ -61,6 +64,7 @@ public interface ProductAPI {
 
   @DELETE
   @Path("/{code}")
+  @RolesAllowed("admin")
   @Operation(summary = "Delete a product", description = "Deletes a product by its code")
   @APIResponses(
       {
@@ -72,6 +76,7 @@ public interface ProductAPI {
 
   @GET
   @Path("/{code}")
+  @RolesAllowed({"admin", "seller"})
   @Operation(summary = "Get a product by code", description = "Returns a single product")
   @APIResponses(
       {
@@ -85,10 +90,12 @@ public interface ProductAPI {
   ProductResponse findByCode(@PathParam("code") UUID code);
 
   @GET
+  @RolesAllowed({"admin", "seller"})
   @Operation(summary = "List all products", description = "Returns all products (sorted by name)")
   @APIResponse(
       responseCode = "200", description = "List of products",
       content = @Content(schema = @Schema(implementation = ProductResponse.class, type = SchemaType.ARRAY))
   )
   List<ProductResponse> findAll();
+
 }

@@ -1,5 +1,6 @@
 package com.perinity.store.infrastructure.web.customer;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -30,6 +31,7 @@ import java.util.UUID;
 public interface CustomerAPI {
 
   @POST
+  @RolesAllowed("admin")
   @Operation(summary = "Create a new customer", description = "Creates a new customer and returns the created resource")
   @APIResponses(
       {
@@ -45,6 +47,7 @@ public interface CustomerAPI {
 
   @PUT
   @Path("/{code}")
+  @RolesAllowed("admin")
   @Operation(summary = "Update an existing customer", description = "Updates a customer by its code")
   @APIResponses(
       {
@@ -61,6 +64,7 @@ public interface CustomerAPI {
 
   @DELETE
   @Path("/{code}")
+  @RolesAllowed("admin")
   @Operation(summary = "Delete a customer", description = "Deletes a customer by its code")
   @APIResponses(
       {
@@ -72,6 +76,7 @@ public interface CustomerAPI {
 
   @GET
   @Path("/{code}")
+  @RolesAllowed({"admin", "seller"})
   @Operation(summary = "Get a customer by code", description = "Returns a single customer")
   @APIResponses(
       {
@@ -85,6 +90,7 @@ public interface CustomerAPI {
   Response findByCode(@PathParam("code") UUID code);
 
   @GET
+  @RolesAllowed({"admin", "seller"})
   @Operation(summary = "List all customers", description = "Returns all customers")
   @APIResponse(
       responseCode = "200", description = "List of customers",

@@ -1,5 +1,6 @@
 package com.perinity.store.infrastructure.web.sale;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -30,6 +31,7 @@ import java.util.UUID;
 public interface SaleAPI {
 
   @POST
+  @RolesAllowed("seller")
   @Operation(summary = "Create a new sale", description = "Creates a new sale and returns the created resource")
   @APIResponses(
       {
@@ -45,6 +47,7 @@ public interface SaleAPI {
 
   @PUT
   @Path("/{code}")
+  @RolesAllowed("seller")
   @Operation(summary = "Update an existing sale", description = "Updates a sale by its code")
   @APIResponses(
       {
@@ -60,6 +63,7 @@ public interface SaleAPI {
 
   @DELETE
   @Path("/{code}")
+  @RolesAllowed("admin")
   @Operation(summary = "Delete a sale", description = "Deletes a sale by its code")
   @APIResponses(
       {
@@ -71,6 +75,7 @@ public interface SaleAPI {
 
   @GET
   @Path("/{code}")
+  @RolesAllowed("seller")
   @Operation(summary = "Get a sale by code", description = "Returns a single sale")
   @APIResponses(
       {
@@ -84,11 +89,12 @@ public interface SaleAPI {
   Response findByCode(@PathParam("code") UUID code);
 
   @GET
+  @RolesAllowed("seller")
   @Operation(summary = "List all sales", description = "Returns all sales")
   @APIResponse(
       responseCode = "200", description = "List of sales",
       content = @Content(schema = @Schema(implementation = SaleResponse.class, type = SchemaType.ARRAY))
   )
   Response findAll();
-}
 
+}

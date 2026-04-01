@@ -1,8 +1,10 @@
 package com.perinity.store.infrastructure.web.sale;
 
+import com.perinity.store.domain.exception.SaleOperationNotAllowedException;
 import com.perinity.store.domain.model.Sale;
 import com.perinity.store.domain.model.SaleItem;
 import com.perinity.store.domain.ports.incoming.SaleUseCase;
+import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
@@ -19,6 +21,7 @@ public class SaleController implements SaleAPI {
 
   private final SaleUseCase saleUseCase;
   private final SaleWebMapper saleWebMapper;
+  private final SecurityIdentity identity;
 
   @Context
   private UriInfo uriInfo;
@@ -26,6 +29,8 @@ public class SaleController implements SaleAPI {
   @Override
   public Response create(final SaleRequest request) {
     final var sale = saleWebMapper.toDomain(request);
+    sale.setSellerCode(identity.getPrincipal().getName());
+    sale.setSellerName(getSellerNameFromToken());
     final var created = saleUseCase.create(sale);
 
     final URI location = uriInfo.getAbsolutePathBuilder()
@@ -39,6 +44,7 @@ public class SaleController implements SaleAPI {
 
   @Override
   public Response update(final UUID code, final SaleUpdateRequest request) {
+    ensureSellerCanManage(code);
     final var updated = saleUseCase.update(code, saleWebMapper.toDomain(request));
     final var body = toResponse(updated);
     return Response.ok(body).build();
@@ -46,6 +52,7 @@ public class SaleController implements SaleAPI {
 
   @Override
   public Response delete(final UUID code) {
+    ensureSellerCanManage(code);
     saleUseCase.delete(code);
     return Response.noContent().build();
   }
@@ -77,6 +84,7 @@ public class SaleController implements SaleAPI {
         .customerCode(sale.getCustomerCode())
         .customerName(sale.getCustomerName())
         .sellerCode(sale.getSellerCode())
+        .sellerName(sale.getSellerName())
         .createdAt(sale.getCreatedAt())
         .items(items)
         .productsTotal(sale.getProductsTotal())
@@ -87,6 +95,29 @@ public class SaleController implements SaleAPI {
         .cardNumber(sale.getCardNumber())
         .updatedAt(sale.getUpdatedAt())
         .build();
+  }
+
+  private String getSellerNameFromToken() {
+    final var name = identity.getAttribute("name");
+
+    if (name instanceof String s && !s.isBlank()) {
+      return s;
+    }
+
+    return identity.getPrincipal().getName();
+  }
+
+  private void ensureSellerCanManage(final UUID saleCode) {
+    if (!identity.hasRole("seller")) {
+      return;
+    }
+
+    final var sale = saleUseCase.findByCode(saleCode);
+    final var sellerCode = identity.getPrincipal().getName();
+
+    if (sale.getSellerCode() == null || !sale.getSellerCode().equals(sellerCode)) {
+      throw new SaleOperationNotAllowedException("seller cannot manage sales from other sellers");
+    }
   }
 
   private SaleItemResponse toItemResponse(final SaleItem item) {
