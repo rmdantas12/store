@@ -4,6 +4,7 @@ import com.perinity.store.infrastructure.persistence.customer.CustomerEntity;
 import com.perinity.store.infrastructure.persistence.customer.CustomerRepositoryJpa;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 
 @QuarkusTest
+@TestSecurity(user = "admin-user", roles = {"admin"})
 class CustomerDeleteResourceTest {
 
   @Inject

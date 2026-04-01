@@ -4,6 +4,7 @@ import com.perinity.store.infrastructure.persistence.product.ProductEntity;
 import com.perinity.store.infrastructure.persistence.product.ProductRepositoryJpa;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +19,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 
 @QuarkusTest
+@TestSecurity(user = "seller", roles = {"seller"})
 class ProductQueryResourceTest {
 
   @Inject
@@ -105,6 +107,7 @@ class ProductQueryResourceTest {
 
   private UUID seedProduct(final String name, final String type) {
     final var code = UUID.randomUUID();
+
     QuarkusTransaction.requiringNew().run(() -> {
       final var entity = ProductEntity.builder()
           .code(code)
@@ -121,6 +124,7 @@ class ProductQueryResourceTest {
       productRepositoryJpa.persist(entity);
       productRepositoryJpa.getEntityManager().flush();
     });
+
     return code;
   }
 }

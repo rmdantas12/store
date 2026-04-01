@@ -4,6 +4,7 @@ import com.perinity.store.infrastructure.persistence.product.ProductEntity;
 import com.perinity.store.infrastructure.persistence.product.ProductRepositoryJpa;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +17,7 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
 @QuarkusTest
+@TestSecurity(user = "admin-user", roles = {"admin"})
 class ProductDeleteResourceTest {
 
   @Inject

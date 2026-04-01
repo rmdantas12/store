@@ -4,14 +4,17 @@ import com.perinity.store.domain.exception.CustomerNotFoundException;
 import com.perinity.store.domain.exception.InvalidSalePaymentException;
 import com.perinity.store.domain.exception.ProductNotFoundException;
 import com.perinity.store.domain.exception.SaleNotFoundException;
+import com.perinity.store.domain.exception.SaleOperationNotAllowedException;
 import com.perinity.store.domain.model.Customer;
 import com.perinity.store.domain.model.PaymentMethod;
 import com.perinity.store.domain.model.Product;
 import com.perinity.store.domain.model.Sale;
 import com.perinity.store.domain.model.SaleItem;
+import com.perinity.store.domain.model.Seller;
 import com.perinity.store.domain.ports.outgoing.CustomerRepositoryPort;
 import com.perinity.store.domain.ports.outgoing.ProductRepositoryPort;
 import com.perinity.store.domain.ports.outgoing.SaleRepositoryPort;
+import com.perinity.store.domain.ports.outgoing.SellerRepositoryPort;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -45,6 +48,9 @@ class SaleServiceTest {
   @Mock
   ProductRepositoryPort productRepository;
 
+  @Mock
+  SellerRepositoryPort sellerRepository;
+
   @InjectMocks
   SaleService service;
 
@@ -64,6 +70,7 @@ class SaleServiceTest {
 
     final var sale = Sale.builder()
         .customerCode(customerCode)
+        .sellerCode("S-001")
         .paymentMethod(PaymentMethod.CASH)
         .cashPaidAmount(new BigDecimal("1000.00"))
         .items(List.of(item))
@@ -311,6 +318,7 @@ class SaleServiceTest {
 
     final var sale = Sale.builder()
         .customerCode(customerCode)
+        .sellerCode("S-001")
         .createdAt(createdAt)
         .paymentMethod(PaymentMethod.CASH)
         .cashPaidAmount(new BigDecimal("1000.00"))
@@ -356,6 +364,7 @@ class SaleServiceTest {
 
     final var sale = Sale.builder()
         .customerCode(customerCode)
+        .sellerCode("S-001")
         .paymentMethod(PaymentMethod.CREDIT_CARD)
         .cardNumber("4111111111111111")
         .items(List.of(item))
@@ -572,13 +581,96 @@ class SaleServiceTest {
 
     final var sale = Sale.builder()
         .code(code)
+        .sellerCode("S-001")
         .build();
 
     when(saleRepository.findByCode(code)).thenReturn(Optional.of(sale));
+    when(sellerRepository.findByCode("S-001")).thenReturn(Optional.of(Seller.builder().code("S-001").name("Seller Name").build()));
 
     final var result = service.findByCode(code);
 
     assertSame(sale, result);
+    assertEquals("Seller Name", result.getSellerName());
+  }
+
+  @Test
+  void update_whenSellerCodeIsDifferent_shouldThrowSaleOperationNotAllowedException() {
+    final var code = UUID.randomUUID();
+
+    final var existing = Sale.builder()
+        .code(code)
+        .sellerCode("S-001")
+        .items(List.of())
+        .paymentMethod(PaymentMethod.CASH)
+        .cashPaidAmount(new BigDecimal("10.00"))
+        .build();
+
+    when(saleRepository.findByCode(code)).thenReturn(Optional.of(existing));
+
+    final var updated = Sale.builder()
+        .sellerCode("S-002")
+        .build();
+
+    assertThrows(SaleOperationNotAllowedException.class, () -> service.update(code, updated));
+  }
+
+  @Test
+  void update_whenSellerCodeIsSame_shouldUpdateNormally() {
+    final var code = UUID.randomUUID();
+
+    final var item = SaleItem.builder()
+        .productCode(UUID.randomUUID())
+        .productName("Produto")
+        .quantity(1)
+        .unitPrice(new BigDecimal("10.00"))
+        .build();
+
+    final var existing = Sale.builder()
+        .code(code)
+        .sellerCode("S-001")
+        .items(List.of(item))
+        .paymentMethod(PaymentMethod.CASH)
+        .cashPaidAmount(new BigDecimal("100.00"))
+        .build();
+
+    when(saleRepository.findByCode(code)).thenReturn(Optional.of(existing));
+    when(saleRepository.update(any())).thenAnswer(inv -> inv.getArgument(0));
+    when(sellerRepository.findByCode("S-001")).thenReturn(Optional.empty());
+
+    final var updated = Sale.builder()
+        .sellerCode("S-001")
+        .build();
+
+    final var result = service.update(code, updated);
+
+    assertEquals(code, result.getCode());
+  }
+
+  @Test
+  void findAll_whenSellerCodeIsNull_shouldNotTryToEnrichName() {
+    final var sale = Sale.builder()
+        .code(UUID.randomUUID())
+        .sellerCode(null)
+        .build();
+
+    when(saleRepository.findAll()).thenReturn(List.of(sale));
+
+    final var result = service.findAll();
+
+    assertEquals(1, result.size());
+    assertEquals(sale, result.getFirst());
+  }
+
+  @Test
+  void findAll_whenRepositoryReturnsNullSale_shouldReturnNullEntry() {
+    final var list = new java.util.ArrayList<Sale>();
+    list.add(null);
+    when(saleRepository.findAll()).thenReturn(list);
+
+    final var result = service.findAll();
+
+    assertEquals(1, result.size());
+    assertEquals(null, result.getFirst());
   }
 
   /**
@@ -597,7 +689,7 @@ class SaleServiceTest {
 
     final var result = service.findAll();
 
-    assertSame(sales, result);
+    assertEquals(sales, result);
   }
 
   /**

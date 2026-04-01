@@ -7,6 +7,7 @@ import com.perinity.store.infrastructure.persistence.product.ProductRepositoryJp
 import com.perinity.store.infrastructure.persistence.sale.SaleRepositoryJpa;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import jakarta.inject.Inject;
@@ -26,6 +27,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.startsWith;
 
 @QuarkusTest
+@TestSecurity(user = "seller", roles = {"seller"})
 class SaleCreateResourceTest {
 
   @Inject
@@ -59,7 +61,6 @@ class SaleCreateResourceTest {
 
     final var request = Map.of(
         "customerCode", customerCode.toString(),
-        "sellerCode", "S-001",
         "paymentMethod", "CASH",
         "cashPaidAmount", new BigDecimal("1000.00"),
         "items", List.of(
