@@ -13,10 +13,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Serviço de aplicação responsável pelo ciclo de vida de {@link Product}.
- *
- * <p>Implementa o caso de uso {@link ProductUseCase}, aplicando atualização parcial e validação de existência
- * antes de operações que dependem do registro.</p>
+ * Caso de uso de produtos ({@link ProductUseCase}).
  */
 @RequiredArgsConstructor
 @ApplicationScoped
@@ -25,10 +22,7 @@ public class ProductService implements ProductUseCase {
   private final ProductRepositoryPort repository;
 
   /**
-   * Cria um novo produto.
-   *
-   * @param product produto a ser criado
-   * @return produto persistido
+   * Cria um produto.
    */
   @Override
   @Transactional
@@ -37,14 +31,7 @@ public class ProductService implements ProductUseCase {
   }
 
   /**
-   * Atualiza um produto existente, realizando atualização parcial.
-   *
-   * <p>Somente campos não nulos no {@code updatedProduct} sobrescrevem o produto existente.</p>
-   *
-   * @param code identificador do produto
-   * @param updatedProduct dados para atualização (parcial)
-   * @return produto atualizado
-   * @throws ProductNotFoundException se o produto não existir
+   * Atualiza um produto (parcial).
    */
   @Override
   @Transactional
@@ -77,10 +64,7 @@ public class ProductService implements ProductUseCase {
   }
 
   /**
-   * Exclui um produto pelo código.
-   *
-   * @param code identificador do produto
-   * @throws ProductNotFoundException se o produto não existir
+   * Exclui um produto por código.
    */
   @Override
   @Transactional
@@ -92,11 +76,7 @@ public class ProductService implements ProductUseCase {
   }
 
   /**
-   * Busca um produto pelo código.
-   *
-   * @param code identificador do produto
-   * @return produto encontrado
-   * @throws ProductNotFoundException se o produto não existir
+   * Busca um produto por código.
    */
   @Override
   public Product findByCode(final UUID code) {
@@ -105,9 +85,7 @@ public class ProductService implements ProductUseCase {
   }
 
   /**
-   * Lista todos os produtos cadastrados.
-   *
-   * @return lista de produtos
+   * Lista produtos.
    */
   @Override
   public List<Product> findAll() {

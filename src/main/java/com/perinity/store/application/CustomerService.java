@@ -16,10 +16,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Serviço de aplicação responsável pelo ciclo de vida de {@link Customer}.
- *
- * <p>Implementa o caso de uso {@link CustomerUseCase}, aplicando regras de negócio como:
- * unicidade de CPF/e-mail, atualização parcial e validação de existência antes de exclusão.</p>
+ * Caso de uso de clientes ({@link CustomerUseCase}).
  */
 @RequiredArgsConstructor
 @ApplicationScoped
@@ -28,14 +25,7 @@ public class CustomerService implements CustomerUseCase {
   private final CustomerRepositoryPort repository;
 
   /**
-   * Cria um novo cliente.
-   *
-   * <p>Valida unicidade de CPF e e-mail (quando informados) antes de persistir.</p>
-   *
-   * @param customer cliente a ser criado
-   * @return cliente persistido
-   * @throws DuplicateCpfException se o CPF informado já existir
-   * @throws DuplicateEmailException se o e-mail informado já existir
+   * Cria um cliente validando unicidade de CPF/e-mail.
    */
   @Override
   @Transactional
@@ -45,16 +35,7 @@ public class CustomerService implements CustomerUseCase {
   }
 
   /**
-   * Atualiza um cliente existente, realizando atualização parcial.
-   *
-   * <p>Somente campos não nulos no {@code updatedCustomer} sobrescrevem o cliente existente.
-   * A validação de unicidade é aplicada ao e-mail quando informado.</p>
-   *
-   * @param code identificador do cliente
-   * @param updatedCustomer dados para atualização (parcial)
-   * @return cliente atualizado
-   * @throws CustomerNotFoundException se o cliente não existir
-   * @throws DuplicateEmailException se o e-mail informado já existir
+   * Atualiza um cliente (parcial) e valida unicidade do e-mail quando informado.
    */
   @Override
   @Transactional
@@ -92,10 +73,7 @@ public class CustomerService implements CustomerUseCase {
   }
 
   /**
-   * Exclui um cliente pelo código.
-   *
-   * @param code identificador do cliente
-   * @throws CustomerNotFoundException se o cliente não existir
+   * Exclui um cliente por código.
    */
   @Override
   @Transactional
@@ -108,11 +86,7 @@ public class CustomerService implements CustomerUseCase {
   }
 
   /**
-   * Busca um cliente pelo código.
-   *
-   * @param code identificador do cliente
-   * @return cliente encontrado
-   * @throws CustomerNotFoundException se o cliente não existir
+   * Busca um cliente por código.
    */
   @Override
   public Customer findByCode(UUID code) {

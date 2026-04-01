@@ -158,7 +158,11 @@ class ProductServiceTest {
   @Test
   void findByCode_whenProductExists_shouldReturnProduct() {
     final var code = UUID.randomUUID();
-    final var product = Product.builder().code(code).build();
+
+    final var product = Product.builder()
+        .code(code)
+        .build();
+
     when(repository.findByCode(code)).thenReturn(Optional.of(product));
 
     final var result = service.findByCode(code);
@@ -172,10 +176,16 @@ class ProductServiceTest {
    */
   @Test
   void findAll_shouldReturnAllProducts() {
-    final var products = List.of(
-        Product.builder().code(UUID.randomUUID()).build(),
-        Product.builder().code(UUID.randomUUID()).build()
-    );
+    final var productA = Product.builder()
+        .code(UUID.randomUUID())
+        .build();
+
+    final var productB = Product.builder()
+        .code(UUID.randomUUID())
+        .build();
+
+    final var products = List.of(productA, productB);
+
     when(repository.findAll()).thenReturn(products);
 
     final var result = service.findAll();

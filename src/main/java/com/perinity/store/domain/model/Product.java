@@ -12,10 +12,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
- * Entidade de domínio que representa um produto cadastrado no sistema.
- *
- * <p>Este modelo contém apenas os dados do produto e é usado pela camada de domínio/aplicação,
- * independente de detalhes de persistência e transporte (web).</p>
+ * Produto cadastrado no sistema.
  */
 @Getter
 @Setter
@@ -26,27 +23,23 @@ import java.util.UUID;
 public class Product {
 
   /**
-   * Código único do produto.
-   *
-   * <p>Identificador do registro no sistema. É autogerado na persistência quando não informado.</p>
+   * Código único do produto (gerado na persistência).
    */
   @EqualsAndHashCode.Include
   private UUID code;
 
   /**
    * Nome do produto.
-   *
-   * <p>Ex.: "Amortecedor traseiro", "Banco esportivo".</p>
    */
   private String name;
 
   /**
-   * Tipo do produto (ex.: acabamento externo, acabamento interno, amortecedor, banco, elétrico, etc.).
+   * Tipo do produto (ex.: acabamento, amortecedor, banco, elétrico).
    */
   private String type;
 
   /**
-   * Detalhes do produto (ex.: a qual carro se destina).
+   * Detalhes do produto (ex.: compatibilidade).
    */
   private String details;
 
@@ -71,23 +64,17 @@ public class Product {
   private BigDecimal weightKg;
 
   /**
-   * Preço de compra do produto.
-   *
-   * <p>Valor pago para adquirir o item (custo).</p>
+   * Preço de compra (custo).
    */
   private BigDecimal purchasePrice;
 
   /**
-   * Preço de venda do produto.
-   *
-   * <p>Valor praticado para venda ao cliente.</p>
+   * Preço de venda.
    */
   private BigDecimal salePrice;
 
   /**
-   * Data de cadastro no sistema.
-   *
-   * <p>Definida no momento da criação/persistência do produto.</p>
+   * Data/hora de cadastro (definida na persistência).
    */
   private LocalDateTime createdAt;
 

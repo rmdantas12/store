@@ -10,10 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Adaptador de persistência do agregado {@link Customer}.
- *
- * <p>Responsável por traduzir o modelo de domínio para entidade JPA e vice-versa, delegando
- * as operações CRUD para o repositório Panache ({@link CustomerRepositoryJpa}).</p>
+ * Adaptador JPA/Panache do agregado {@link Customer}.
  */
 @RequiredArgsConstructor
 @ApplicationScoped
@@ -25,12 +22,6 @@ public class CustomerRepositoryAdapter implements CustomerRepositoryPort {
 
   /**
    * Persiste um novo cliente.
-   *
-   * <p>Converte o {@link Customer} de domínio para {@link CustomerEntity}, persiste e retorna o
-   * domínio mapeado a partir da entidade persistida.</p>
-   *
-   * @param customer cliente no modelo de domínio
-   * @return cliente persistido no modelo de domínio
    */
   @Override
   public Customer save(final Customer customer) {
@@ -41,12 +32,6 @@ public class CustomerRepositoryAdapter implements CustomerRepositoryPort {
 
   /**
    * Atualiza um cliente existente.
-   *
-   * <p>Converte o {@link Customer} de domínio para {@link CustomerEntity}, realiza merge via
-   * {@code EntityManager} e retorna o domínio mapeado.</p>
-   *
-   * @param customer cliente no modelo de domínio
-   * @return cliente atualizado no modelo de domínio
    */
   @Override
   public Customer update(final Customer customer) {
@@ -56,10 +41,7 @@ public class CustomerRepositoryAdapter implements CustomerRepositoryPort {
   }
 
   /**
-   * Busca um cliente pelo código (UUID).
-   *
-   * @param code identificador do cliente
-   * @return {@link Optional} com o cliente encontrado, se existir
+   * Busca um cliente por código.
    */
   @Override
   public Optional<Customer> findByCode(UUID code) {
@@ -68,9 +50,7 @@ public class CustomerRepositoryAdapter implements CustomerRepositoryPort {
   }
 
   /**
-   * Lista todos os clientes persistidos.
-   *
-   * @return lista de clientes no modelo de domínio
+   * Lista clientes.
    */
   @Override
   public List<Customer> findAll() {
@@ -81,9 +61,7 @@ public class CustomerRepositoryAdapter implements CustomerRepositoryPort {
   }
 
   /**
-   * Exclui um cliente pelo código (UUID).
-   *
-   * @param code identificador do cliente
+   * Exclui um cliente por código.
    */
   @Override
   public void deleteByCode(final UUID code) {
@@ -91,10 +69,7 @@ public class CustomerRepositoryAdapter implements CustomerRepositoryPort {
   }
 
   /**
-   * Verifica se existe cliente com o código informado.
-   *
-   * @param code identificador do cliente
-   * @return {@code true} se existir, caso contrário {@code false}
+   * Verifica existência por código.
    */
   @Override
   public boolean existsByCode(final UUID code) {
@@ -102,10 +77,7 @@ public class CustomerRepositoryAdapter implements CustomerRepositoryPort {
   }
 
   /**
-   * Verifica se existe cliente com o CPF informado.
-   *
-   * @param cpf CPF do cliente
-   * @return {@code true} se existir, caso contrário {@code false}
+   * Verifica existência por CPF.
    */
   @Override
   public boolean existsByCpf(String cpf) {
@@ -113,10 +85,7 @@ public class CustomerRepositoryAdapter implements CustomerRepositoryPort {
   }
 
   /**
-   * Verifica se existe cliente com o e-mail informado.
-   *
-   * @param email e-mail do cliente
-   * @return {@code true} se existir, caso contrário {@code false}
+   * Verifica existência por e-mail.
    */
   @Override
   public boolean existsByEmail(String email) {
