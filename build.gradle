@@ -1,11 +1,40 @@
 plugins {
     id 'java'
     id 'io.quarkus'
+    id 'jacoco'
+    id 'org.sonarqube' version '7.2.3.7755'
 }
+
+apply from: 'gradle/jacoco.gradle'
+apply from: 'gradle/sonar.gradle'
 
 repositories {
     mavenCentral()
     mavenLocal()
+}
+
+group = 'com.perinity'
+
+def props = new Properties()
+
+file("src/main/resources/application.properties").withInputStream {
+    props.load(it)
+}
+
+version = props.getProperty("quarkus.application.version")
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+compileJava {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << '-parameters'
+}
+
+compileTestJava {
+    options.encoding = 'UTF-8'
 }
 
 dependencies {
@@ -42,28 +71,4 @@ dependencies {
     // Test
     testImplementation 'io.quarkus:quarkus-junit5'
     testImplementation 'io.rest-assured:rest-assured'
-}
-
-group = 'com.perinity'
-
-def props = new Properties()
-
-file("src/main/resources/application.properties").withInputStream {
-    props.load(it)
-}
-
-version = props.getProperty("quarkus.application.version")
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
-}
-
-compileJava {
-    options.encoding = 'UTF-8'
-    options.compilerArgs << '-parameters'
-}
-
-compileTestJava {
-    options.encoding = 'UTF-8'
 }
