@@ -1,0 +1,53 @@
+test {
+    finalizedBy jacocoTestReport
+}
+
+ext.jacocoCoverageExclusions = [
+    '**/infrastructure/web/**',
+    '**/infrastructure/persistence/**',
+    '**/domain/model/**',
+    '**/infrastructure/**/mapper/**'
+]
+
+jacocoTestCoverageVerification {
+    dependsOn test
+
+    violationRules {
+        rule {
+            afterEvaluate {
+                classDirectories.setFrom(files(classDirectories.files.collect { dir ->
+                    fileTree(dir: dir, exclude: jacocoCoverageExclusions)
+                }))
+            }
+
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 1.0
+            }
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 1.0
+            }
+        }
+    }
+}
+
+check.dependsOn jacocoTestCoverageVerification
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        html.required = true
+        csv.required = false
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect { dir ->
+            fileTree(dir: dir, exclude: jacocoCoverageExclusions)
+        }))
+    }
+}
+

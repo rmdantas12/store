@@ -1,20 +1,16 @@
 plugins {
     id 'java'
     id 'io.quarkus'
+    id 'jacoco'
+    id 'org.sonarqube' version '7.2.3.7755'
 }
+
+apply from: 'gradle/jacoco.gradle'
+apply from: 'gradle/sonar.gradle'
 
 repositories {
     mavenCentral()
     mavenLocal()
-}
-
-dependencies {
-    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
-    implementation 'io.quarkus:quarkus-arc'
-    implementation 'io.quarkus:quarkus-rest'
-    implementation 'io.quarkus:quarkus-container-image-docker'
-    testImplementation 'io.quarkus:quarkus-junit'
-    testImplementation 'io.rest-assured:rest-assured'
 }
 
 group = 'com.perinity'
@@ -39,4 +35,57 @@ compileJava {
 
 compileTestJava {
     options.encoding = 'UTF-8'
+}
+
+sourceSets {
+    integrationTest {
+        java.srcDir 'src/native-test/java'
+        resources.srcDir 'src/native-test/resources'
+        compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
+        runtimeClasspath += output + compileClasspath
+    }
+}
+
+configurations {
+    integrationTestImplementation.extendsFrom testImplementation
+    integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
+}
+
+dependencies {
+    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+
+    // Arch
+    implementation 'io.quarkus:quarkus-container-image-docker'
+    implementation 'io.quarkus:quarkus-arc'
+
+    //  Rest
+    implementation 'io.quarkus:quarkus-rest'
+    implementation 'io.quarkus:quarkus-rest-jackson'
+
+    // OpenAPI with Swagger
+    implementation 'io.quarkus:quarkus-smallrye-openapi'
+    implementation 'io.quarkus:quarkus-swagger-ui'
+
+    // Persistence and validation
+    implementation 'io.quarkus:quarkus-hibernate-orm-panache'
+    implementation 'io.quarkus:quarkus-hibernate-validator'
+    implementation 'io.quarkus:quarkus-jdbc-postgresql'
+
+    // Mapstruct
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+
+    // Lombok
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+    testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok-mapstruct-binding:${lombokWithMapstruct}"
+
+    // Test
+    testImplementation 'io.quarkus:quarkus-junit5'
+    testImplementation 'io.rest-assured:rest-assured'
+    testImplementation 'org.mockito:mockito-junit-jupiter'
+    testImplementation 'io.quarkus:quarkus-jdbc-h2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params'
 }
