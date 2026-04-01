@@ -4,13 +4,16 @@ import com.perinity.store.domain.exception.CustomerNotFoundException;
 import com.perinity.store.domain.exception.InvalidSalePaymentException;
 import com.perinity.store.domain.exception.ProductNotFoundException;
 import com.perinity.store.domain.exception.SaleNotFoundException;
+import com.perinity.store.domain.exception.SaleOperationNotAllowedException;
 import com.perinity.store.domain.model.PaymentMethod;
 import com.perinity.store.domain.model.Sale;
 import com.perinity.store.domain.model.SaleItem;
+import com.perinity.store.domain.model.Seller;
 import com.perinity.store.domain.ports.incoming.SaleUseCase;
 import com.perinity.store.domain.ports.outgoing.CustomerRepositoryPort;
 import com.perinity.store.domain.ports.outgoing.ProductRepositoryPort;
 import com.perinity.store.domain.ports.outgoing.SaleRepositoryPort;
+import com.perinity.store.domain.ports.outgoing.SellerRepositoryPort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +43,8 @@ public class SaleService implements SaleUseCase {
 
   private final ProductRepositoryPort productRepository;
 
+  private final SellerRepositoryPort sellerRepository;
+
   /**
    * Cria uma venda: valida cliente/produtos, congela preço unitário, calcula totais e valida pagamento.
    */
@@ -59,6 +64,13 @@ public class SaleService implements SaleUseCase {
 
     validatePayment(sale.getPaymentMethod(), sale.getCashPaidAmount(), sale.getCardNumber(), saleTotal);
 
+    sellerRepository.saveIfNotExists(
+        Seller.builder()
+            .code(sale.getSellerCode())
+            .name(sale.getSellerName())
+            .build()
+    );
+
     sale.setCustomerName(customer.getFullName());
     sale.setCreatedAt(LocalDateTime.now());
     sale.setItems(items);
@@ -66,7 +78,8 @@ public class SaleService implements SaleUseCase {
     sale.setTaxAmount(tax);
     sale.setSaleTotal(saleTotal);
 
-    return saleRepository.save(sale);
+    final var saved = saleRepository.save(sale);
+    return enrichSellerName(saved);
   }
 
   /**
@@ -78,6 +91,10 @@ public class SaleService implements SaleUseCase {
     final var existing = saleRepository.findByCode(code)
         .orElseThrow(SaleNotFoundException::new);
 
+    if (Objects.nonNull(updatedSale.getSellerCode()) && !Objects.equals(updatedSale.getSellerCode(), existing.getSellerCode())) {
+      throw new SaleOperationNotAllowedException("sellerCode cannot be changed");
+    }
+
     final var customerCode = updatedSale.getCustomerCode();
 
     if (Objects.nonNull(customerCode) && !Objects.equals(customerCode, existing.getCustomerCode())) {
@@ -87,9 +104,6 @@ public class SaleService implements SaleUseCase {
       existing.setCustomerCode(updatedSale.getCustomerCode());
       existing.setCustomerName(customer.getFullName());
     }
-
-    Optional.ofNullable(updatedSale.getSellerCode())
-        .ifPresent(existing::setSellerCode);
 
     if (updatedSale.getItems() != null) {
       final var items = updatedSale.getItems().stream()
@@ -118,7 +132,8 @@ public class SaleService implements SaleUseCase {
     existing.setTaxAmount(tax);
     existing.setSaleTotal(saleTotal);
 
-    return saleRepository.update(existing);
+    final var saved = saleRepository.update(existing);
+    return enrichSellerName(saved);
   }
 
   /**
@@ -139,6 +154,7 @@ public class SaleService implements SaleUseCase {
   @Override
   public Sale findByCode(final UUID code) {
     return saleRepository.findByCode(code)
+        .map(this::enrichSellerName)
         .orElseThrow(SaleNotFoundException::new);
   }
 
@@ -147,7 +163,10 @@ public class SaleService implements SaleUseCase {
    */
   @Override
   public List<Sale> findAll() {
-    return saleRepository.findAll();
+    return saleRepository.findAll()
+        .stream()
+        .map(this::enrichSellerName)
+        .toList();
   }
 
   private SaleItem enrichItemWithProduct(final SaleItem item) {
@@ -160,6 +179,18 @@ public class SaleService implements SaleUseCase {
         .quantity(item.getQuantity())
         .unitPrice(product.getSalePrice())
         .build();
+  }
+
+  private Sale enrichSellerName(final Sale sale) {
+    if (sale == null || sale.getSellerCode() == null) {
+      return sale;
+    }
+
+    sellerRepository.findByCode(sale.getSellerCode())
+        .map(Seller::getName)
+        .ifPresent(sale::setSellerName);
+
+    return sale;
   }
 
   private BigDecimal calculateProductsTotal(final List<SaleItem> items) {

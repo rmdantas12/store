@@ -45,6 +45,11 @@ public class Sale {
   private String sellerCode;
 
   /**
+   * Nome do vendedor para exibição/consulta.
+   */
+  private String sellerName;
+
+  /**
    * Itens vendidos (quantidade e valor unitário congelado).
    */
   private List<SaleItem> items;

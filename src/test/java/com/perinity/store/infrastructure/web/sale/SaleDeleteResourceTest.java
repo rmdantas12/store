@@ -7,6 +7,7 @@ import com.perinity.store.infrastructure.persistence.product.ProductRepositoryJp
 import com.perinity.store.infrastructure.persistence.sale.SaleRepositoryJpa;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,10 +20,10 @@ import java.util.Map;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
 @QuarkusTest
+@TestSecurity(user = "seller", roles = {"seller"})
 class SaleDeleteResourceTest {
 
   @Inject
@@ -47,10 +48,10 @@ class SaleDeleteResourceTest {
 
   /**
    * Cenário: excluir uma venda existente.
-   * Expectativa: retornar 204 e não afetar o cadastro de cliente/produto.
+   * Expectativa: retornar 403 (venda não pode ser excluída).
    */
   @Test
-  void delete_whenSaleExists_shouldReturn204AndNotAffectCustomerOrProduct() {
+  void delete_whenSaleExists_shouldReturn403() {
     final var customerCode = seedCustomer("John Doe");
     final var productCode = seedProduct("Amortecedor", new BigDecimal("100.00"));
 
@@ -81,34 +82,7 @@ class SaleDeleteResourceTest {
         .delete("/api/sales/" + saleCode);
 
     deleteResponse.then()
-        .statusCode(204);
-
-    final var getSaleResponse = given()
-        .contentType(ContentType.JSON)
-        .when()
-        .get("/api/sales/" + saleCode);
-
-    getSaleResponse.then()
-        .statusCode(404)
-        .body("message", equalTo("Sale not found"));
-
-    final var getCustomerResponse = given()
-        .contentType(ContentType.JSON)
-        .when()
-        .get("/api/customers/" + customerCode);
-
-    getCustomerResponse.then()
-        .statusCode(200)
-        .body("code", equalTo(customerCode.toString()));
-
-    final var getProductResponse = given()
-        .contentType(ContentType.JSON)
-        .when()
-        .get("/api/products/" + productCode);
-
-    getProductResponse.then()
-        .statusCode(200)
-        .body("code", equalTo(productCode.toString()));
+        .statusCode(403);
   }
 
   /**
@@ -123,8 +97,7 @@ class SaleDeleteResourceTest {
         .delete("/api/sales/" + UUID.randomUUID());
 
     response.then()
-        .statusCode(404)
-        .body("message", equalTo("Sale not found"));
+        .statusCode(403);
   }
 
   private UUID seedCustomer(final String fullName) {

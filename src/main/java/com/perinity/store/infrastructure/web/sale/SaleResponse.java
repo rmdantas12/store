@@ -21,6 +21,8 @@ public class SaleResponse {
 
   private String sellerCode;
 
+  private String sellerName;
+
   private LocalDateTime createdAt;
 
   private List<SaleItemResponse> items;
@@ -38,5 +40,5 @@ public class SaleResponse {
   private String cardNumber;
 
   private LocalDateTime updatedAt;
-}
 
+}

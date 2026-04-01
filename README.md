@@ -1,62 +1,92 @@
-# store
+# Store API
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+[![Java](https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white)](#)
+[![Quarkus](https://img.shields.io/badge/Quarkus-3.34.1-4695EB?logo=quarkus&logoColor=white)](#)
+[![Release](https://img.shields.io/github/v/release/rmdantas12/store?label=Release)](https://github.com/rmdantas12/store/releases)
+[![Docker image](https://img.shields.io/github/v/tag/rmdantas12/store?label=ghcr.io%2Frmdantas12%2Fstore&logo=docker&logoColor=white)](https://github.com/rmdantas12/store/pkgs/container/store)
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+API de uma loja, construída com Quarkus, seguindo **Arquitetura Hexagonal (Ports & Adapters)**.
 
-## Running the application in dev mode
+## Links rápidos
 
-You can run your application in dev mode that enables live coding using:
+- **Releases**: `https://github.com/rmdantas12/store/releases`
+- **Imagem Docker (GHCR)**: `https://github.com/rmdantas12/store/pkgs/container/store`
+- **Keycloak (token)**: `docs/KEYCLOAK.md`
 
-```shell script
+## Autenticação (token obrigatório)
+
+Todas as rotas em `/api/*` exigem um **token Bearer válido**.
+
+- **Como obter token**: veja `docs/KEYCLOAK.md`
+- **Como enviar nas requests**:
+
+```http
+Authorization: Bearer <access_token>
+```
+
+## Padrão de commits
+
+Use mensagens curtas, no formato:
+
+```text
+<tipo>: <descrição>
+```
+
+Tipos usados no projeto:
+
+- **feat**: nova funcionalidade
+- **fix**: correção de bug
+- **doc**: documentação (README, docs, comentários essenciais)
+- **style**: formatação/estilo (sem mudança de comportamento)
+- **chore**: tarefas gerais (ajustes pequenos, manutenção)
+- **ci**: pipeline (GitHub Actions, sonar/jacoco, etc.)
+- **build**: build/deps (Gradle, plugins, dependências)
+
+Exemplos:
+
+```text
+feat: criar CRUD de produtos
+fix: ajustar validação de pagamento na venda
+doc: documentar uso do token nas APIs
+```
+
+## Arquitetura e organização de pacotes (Hexagonal)
+
+Base do código: `src/main/java/com/perinity/store`.
+
+- **`domain/`**: núcleo (regras de negócio, modelos e contratos/ports)
+- **`application/`**: casos de uso (orquestra regras do domínio e chama ports de saída)
+- **`infrastructure/`**: adaptadores (HTTP, persistência e integrações externas)
+
+Ideia principal:
+
+- O **núcleo** (`domain` + `application`) não depende de web/banco.
+- A **infra** depende do núcleo e “pluga” as implementações via **ports**.
+
+## Como rodar localmente
+
+### Subir serviços (Postgres + Keycloak)
+
+```bash
+docker compose up -d
+```
+
+### Rodar em modo dev
+
+```bash
 ./gradlew quarkusDev
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
+## Build e testes
 
-## Packaging and running the application
-
-The application can be packaged using:
-
-```shell script
+```bash
 ./gradlew build
 ```
 
-It produces the `quarkus-run.jar` file in the `build/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `build/quarkus-app/lib/` directory.
+## Docker image
 
-The application is now runnable using `java -jar build/quarkus-app/quarkus-run.jar`.
+A imagem é gerada para o GHCR com o nome:
 
-If you want to build an _über-jar_, execute the following command:
+- `ghcr.io/rmdantas12/store:<tag>`
 
-```shell script
-./gradlew build -Dquarkus.package.jar.type=uber-jar
-```
-
-The application, packaged as an _über-jar_, is now runnable using `java -jar build/*-runner.jar`.
-
-## Creating a native executable
-
-You can create a native executable using:
-
-```shell script
-./gradlew build -Dquarkus.native.enabled=true
-```
-
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
-
-```shell script
-./gradlew build -Dquarkus.native.enabled=true -Dquarkus.native.container-build=true
-```
-
-You can then execute your native executable with: `./build/store-1.0-SNAPSHOT-runner`
-
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/gradle-tooling>.
-
-## Provided Code
-
-### REST
-
-Easily start your REST Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
+Veja a lista de versões em: `https://github.com/rmdantas12/store/pkgs/container/store`

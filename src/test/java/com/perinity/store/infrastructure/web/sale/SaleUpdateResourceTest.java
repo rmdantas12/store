@@ -7,6 +7,7 @@ import com.perinity.store.infrastructure.persistence.product.ProductRepositoryJp
 import com.perinity.store.infrastructure.persistence.sale.SaleRepositoryJpa;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +24,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
 @QuarkusTest
+@TestSecurity(user = "seller", roles = {"seller"})
 class SaleUpdateResourceTest {
 
   @Inject

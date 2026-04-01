@@ -23,8 +23,6 @@ public class SaleRequest {
   @NotNull
   private UUID customerCode;
 
-  private String sellerCode;
-
   @NotNull
   private PaymentMethod paymentMethod;
 
@@ -34,5 +32,5 @@ public class SaleRequest {
 
   @NotNull
   private List<@Valid SaleItemRequest> items;
-}
 
+}

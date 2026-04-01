@@ -5,6 +5,7 @@ test {
 ext.jacocoCoverageExclusions = [
     '**/infrastructure/web/**',
     '**/infrastructure/persistence/**',
+    '**/infrastructure/config/**',
     '**/domain/model/**',
     '**/infrastructure/**/mapper/**'
 ]

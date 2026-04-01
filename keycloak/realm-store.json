@@ -1,0 +1,63 @@
+{
+  "realm": "store",
+  "enabled": true,
+  "displayName": "Store",
+  "loginWithEmailAllowed": true,
+  "registrationAllowed": false,
+  "resetPasswordAllowed": true,
+  "clients": [
+    {
+      "clientId": "store-api",
+      "name": "Store API",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "store-secret",
+      "directAccessGrantsEnabled": true,
+      "standardFlowEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "*"
+      ],
+      "webOrigins": [
+        "*"
+      ]
+    }
+  ],
+  "roles": {
+    "realm": [
+      { "name": "seller" },
+      { "name": "admin" }
+    ]
+  },
+  "users": [
+    {
+      "username": "seller",
+      "email": "seller@store.local",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Store",
+      "lastName": "Seller",
+      "requiredActions": [],
+      "credentials": [
+        { "type": "password", "value": "seller", "temporary": false }
+      ],
+      "realmRoles": [ "seller" ]
+    },
+    {
+      "username": "admin-user",
+      "email": "admin@store.local",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Store",
+      "lastName": "Admin",
+      "requiredActions": [],
+      "credentials": [
+        { "type": "password", "value": "admin", "temporary": false }
+      ],
+      "realmRoles": [ "admin" ]
+    }
+  ]
+}
+

@@ -10,6 +10,8 @@ public interface SaleWebMapper {
 
   @Mapping(target = "code", ignore = true)
   @Mapping(target = "customerName", ignore = true)
+  @Mapping(target = "sellerCode", ignore = true)
+  @Mapping(target = "sellerName", ignore = true)
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)
   @Mapping(target = "productsTotal", ignore = true)
@@ -19,6 +21,8 @@ public interface SaleWebMapper {
 
   @Mapping(target = "code", ignore = true)
   @Mapping(target = "customerName", ignore = true)
+  @Mapping(target = "sellerCode", ignore = true)
+  @Mapping(target = "sellerName", ignore = true)
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)
   @Mapping(target = "productsTotal", ignore = true)

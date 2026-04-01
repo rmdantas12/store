@@ -1,5 +1,6 @@
 package com.perinity.store.infrastructure.web.sale;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -17,6 +18,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import java.util.UUID;
@@ -25,9 +27,11 @@ import java.util.UUID;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Tag(name = "Sales", description = "Sale management operations")
+@SecurityRequirement(name = "bearerAuth")
 public interface SaleAPI {
 
   @POST
+  @RolesAllowed("seller")
   @Operation(summary = "Create a new sale", description = "Creates a new sale and returns the created resource")
   @APIResponses(
       {
@@ -43,6 +47,7 @@ public interface SaleAPI {
 
   @PUT
   @Path("/{code}")
+  @RolesAllowed("seller")
   @Operation(summary = "Update an existing sale", description = "Updates a sale by its code")
   @APIResponses(
       {
@@ -58,6 +63,7 @@ public interface SaleAPI {
 
   @DELETE
   @Path("/{code}")
+  @RolesAllowed("admin")
   @Operation(summary = "Delete a sale", description = "Deletes a sale by its code")
   @APIResponses(
       {
@@ -69,6 +75,7 @@ public interface SaleAPI {
 
   @GET
   @Path("/{code}")
+  @RolesAllowed("seller")
   @Operation(summary = "Get a sale by code", description = "Returns a single sale")
   @APIResponses(
       {
@@ -82,11 +89,12 @@ public interface SaleAPI {
   Response findByCode(@PathParam("code") UUID code);
 
   @GET
+  @RolesAllowed("seller")
   @Operation(summary = "List all sales", description = "Returns all sales")
   @APIResponse(
       responseCode = "200", description = "List of sales",
       content = @Content(schema = @Schema(implementation = SaleResponse.class, type = SchemaType.ARRAY))
   )
   Response findAll();
-}
 
+}

@@ -4,6 +4,7 @@ import com.perinity.store.infrastructure.persistence.customer.CustomerEntity;
 import com.perinity.store.infrastructure.persistence.customer.CustomerRepositoryJpa;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import jakarta.inject.Inject;
@@ -22,6 +23,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.startsWith;
 
 @QuarkusTest
+@TestSecurity(user = "admin-user", roles = {"admin"})
 class CustomerCreateResourceTest {
 
   @Inject
