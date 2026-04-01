@@ -55,3 +55,18 @@ Passos sugeridos:
 1. Selecionar o environment `Store Local`
 2. Executar **Auth - Get token (seller)** ou **Auth - Get token (admin)**
 3. Copiar o `accessToken` do environment e usar nas chamadas da aplicação (quando aplicável).
+
+## Usar o token na aplicação
+
+As rotas `/api/*` exigem um token válido. Inclua o header em todas as requests:
+
+```http
+Authorization: Bearer <access_token>
+```
+
+Exemplo com `curl`:
+
+```bash
+curl -X GET "http://localhost:8080/api/customers" \
+  -H "Authorization: Bearer <access_token>"
+```
