@@ -13,6 +13,7 @@ public interface CustomerWebMapper {
   Customer toDomain(final CustomerRequest request);
 
   @Mapping(target = "code", ignore = true)
+  @Mapping(target = "cpf", ignore = true)
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)
   Customer toDomain(final CustomerUpdateRequest request);
