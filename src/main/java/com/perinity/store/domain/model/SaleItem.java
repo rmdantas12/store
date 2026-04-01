@@ -11,9 +11,6 @@ import java.util.UUID;
 
 /**
  * Item de uma venda.
- *
- * <p>Representa um produto vendido dentro de uma {@link Sale}, incluindo a quantidade comprada e o valor unitário
- * praticado no momento da venda (sem controle de estoque).</p>
  */
 @Getter
 @Setter
@@ -28,9 +25,7 @@ public class SaleItem {
   private UUID productCode;
 
   /**
-   * Nome do produto no momento da venda.
-   *
-   * <p>Usado para exibição em listagens/consultas. Pode ser preenchido no cadastro da venda (enriquecimento).</p>
+   * Nome do produto para exibição/consulta.
    */
   private String productName;
 
@@ -40,9 +35,7 @@ public class SaleItem {
   private Integer quantity;
 
   /**
-   * Valor unitário do produto no momento da venda.
-   *
-   * <p>Esse valor é "congelado" no item para manter histórico, mesmo que o preço do produto mude futuramente.</p>
+   * Valor unitário congelado no momento da venda.
    */
   private BigDecimal unitPrice;
 }

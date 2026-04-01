@@ -12,14 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Adaptador de persistência para o agregado {@link Sale}.
- *
- * <p>Responsável por implementar o {@link SaleRepositoryPort} usando Panache/JPA:
- * converte entre o modelo de domínio e as entidades JPA, executa operações de persistência
- * e realiza consultas trazendo os relacionamentos necessários (cliente e itens).</p>
- *
- * <p>A exclusão de uma venda remove seus itens associados, sem afetar os cadastros de
- * cliente e produto.</p>
+ * Adaptador JPA/Panache do agregado {@link Sale}.
  */
 @RequiredArgsConstructor
 @ApplicationScoped
@@ -33,9 +26,6 @@ public class SaleRepositoryAdapter implements SaleRepositoryPort {
 
   /**
    * Persiste uma nova venda.
-   *
-   * @param sale venda no modelo de domínio
-   * @return venda persistida no modelo de domínio
    */
   @Override
   public Sale save(final Sale sale) {
@@ -47,9 +37,6 @@ public class SaleRepositoryAdapter implements SaleRepositoryPort {
 
   /**
    * Atualiza uma venda existente.
-   *
-   * @param sale venda no modelo de domínio
-   * @return venda atualizada no modelo de domínio
    */
   @Override
   public Sale update(final Sale sale) {
@@ -60,10 +47,7 @@ public class SaleRepositoryAdapter implements SaleRepositoryPort {
   }
 
   /**
-   * Busca uma venda pelo código (UUID), carregando seus detalhes (cliente e itens).
-   *
-   * @param code identificador da venda
-   * @return {@link Optional} com a venda encontrada, se existir
+   * Busca uma venda por código, carregando cliente e itens.
    */
   @Override
   public Optional<Sale> findByCode(final UUID code) {
@@ -72,11 +56,7 @@ public class SaleRepositoryAdapter implements SaleRepositoryPort {
   }
 
   /**
-   * Lista todas as vendas, carregando cliente e itens.
-   *
-   * <p>Ordena por {@code createdAt} decrescente (mais recentes primeiro).</p>
-   *
-   * @return lista de vendas no modelo de domínio
+   * Lista vendas, carregando cliente e itens (mais recentes primeiro).
    */
   @Override
   public List<Sale> findAll() {
@@ -94,11 +74,7 @@ public class SaleRepositoryAdapter implements SaleRepositoryPort {
   }
 
   /**
-   * Exclui uma venda pelo código (UUID).
-   *
-   * <p>Remove primeiro os itens associados para evitar violação de integridade referencial.</p>
-   *
-   * @param code identificador da venda
+   * Exclui uma venda e seus itens.
    */
   @Override
   public void deleteByCode(final UUID code) {
@@ -107,10 +83,7 @@ public class SaleRepositoryAdapter implements SaleRepositoryPort {
   }
 
   /**
-   * Verifica se existe uma venda com o código informado.
-   *
-   * @param code identificador da venda
-   * @return {@code true} se existir, caso contrário {@code false}
+   * Verifica existência por código.
    */
   @Override
   public boolean existsByCode(final UUID code) {

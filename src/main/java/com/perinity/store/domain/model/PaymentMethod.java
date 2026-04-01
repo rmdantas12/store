@@ -1,21 +1,17 @@
 package com.perinity.store.domain.model;
 
 /**
- * Forma de pagamento utilizada em uma venda.
+ * Forma de pagamento de uma venda.
  */
 public enum PaymentMethod {
 
   /**
-   * Pagamento em dinheiro.
-   *
-   * <p>Requer o valor pago ({@code cashPaidAmount}).</p>
+   * Dinheiro.
    */
   CASH,
 
   /**
-   * Pagamento com cartão de crédito.
-   *
-   * <p>Requer o número do cartão ({@code cardNumber}).</p>
+   * Cartão de crédito.
    */
   CREDIT_CARD
 }

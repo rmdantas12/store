@@ -24,18 +24,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Serviço de aplicação responsável pelo ciclo de vida de {@link Sale}.
+ * Caso de uso de vendas ({@link SaleUseCase}).
  *
- * <p>Implementa o caso de uso {@link SaleUseCase} para criação, atualização, exclusão e consulta de vendas.</p>
- *
- * <p>Regras aplicadas:</p>
- * <ul>
- *   <li>Valida existência do cliente informado.</li>
- *   <li>Valida existência dos produtos informados nos itens.</li>
- *   <li>Enriquece itens com nome do produto e "congela" o valor unitário com base no preço de venda do produto.</li>
- *   <li>Calcula total dos produtos, imposto fixo de 9% e total final da venda.</li>
- *   <li>Valida forma de pagamento e seus dados pertinentes (dinheiro ou cartão de crédito).</li>
- * </ul>
+ * <p>Calcula totais (imposto fixo 9%) e valida a forma de pagamento.</p>
  */
 @RequiredArgsConstructor
 @ApplicationScoped
@@ -50,16 +41,7 @@ public class SaleService implements SaleUseCase {
   private final ProductRepositoryPort productRepository;
 
   /**
-   * Cria uma nova venda.
-   *
-   * <p>Valida o cliente e os produtos, enriquece os itens com dados do produto (nome/preço de venda),
-   * calcula totais (produtos + imposto) e valida os dados da forma de pagamento.</p>
-   *
-   * @param sale venda a ser criada
-   * @return venda persistida com totais calculados
-   * @throws CustomerNotFoundException se o cliente informado não existir
-   * @throws ProductNotFoundException se algum produto informado nos itens não existir
-   * @throws InvalidSalePaymentException se os dados da forma de pagamento forem inválidos
+   * Cria uma venda: valida cliente/produtos, congela preço unitário, calcula totais e valida pagamento.
    */
   @Override
   @Transactional
@@ -88,18 +70,7 @@ public class SaleService implements SaleUseCase {
   }
 
   /**
-   * Atualiza uma venda existente (atualização parcial).
-   *
-   * <p>Quando itens são informados, eles são novamente enriquecidos e os totais são recalculados.
-   * Quando a forma de pagamento é informada/alterada, os dados pertinentes são revalidados.</p>
-   *
-   * @param code identificador da venda
-   * @param updatedSale dados para atualização (parcial)
-   * @return venda atualizada
-   * @throws SaleNotFoundException se a venda não existir
-   * @throws CustomerNotFoundException se o cliente informado não existir (quando alterado)
-   * @throws ProductNotFoundException se algum produto informado nos itens não existir
-   * @throws InvalidSalePaymentException se os dados da forma de pagamento forem inválidos
+   * Atualiza uma venda (parcial): recalcula totais quando itens/pagamento mudam.
    */
   @Override
   @Transactional
@@ -151,12 +122,7 @@ public class SaleService implements SaleUseCase {
   }
 
   /**
-   * Exclui uma venda pelo código.
-   *
-   * <p>A exclusão da venda não afeta os cadastros de produtos e clientes.</p>
-   *
-   * @param code identificador da venda
-   * @throws SaleNotFoundException se a venda não existir
+   * Exclui uma venda sem afetar cliente/produto.
    */
   @Override
   @Transactional
@@ -168,11 +134,7 @@ public class SaleService implements SaleUseCase {
   }
 
   /**
-   * Busca uma venda pelo código.
-   *
-   * @param code identificador da venda
-   * @return venda encontrada
-   * @throws SaleNotFoundException se a venda não existir
+   * Busca uma venda por código.
    */
   @Override
   public Sale findByCode(final UUID code) {
@@ -181,9 +143,7 @@ public class SaleService implements SaleUseCase {
   }
 
   /**
-   * Lista todas as vendas cadastradas.
-   *
-   * @return lista de vendas
+   * Lista as vendas.
    */
   @Override
   public List<Sale> findAll() {

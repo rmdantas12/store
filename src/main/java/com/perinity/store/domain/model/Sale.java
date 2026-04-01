@@ -13,10 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Entidade de domínio que representa uma venda cadastrada no sistema.
- *
- * <p>Uma venda é composta por um cliente, itens (produtos + quantidades) e uma forma de pagamento. No momento
- * do cadastro, o valor unitário de cada item é armazenado no próprio item para manter histórico.</p>
+ * Venda registrada no sistema.
  */
 @Getter
 @Setter
@@ -27,9 +24,7 @@ import java.util.UUID;
 public class Sale {
 
   /**
-   * Código único da venda.
-   *
-   * <p>Identificador do registro no sistema. É autogerado na persistência quando não informado.</p>
+   * Código único da venda (gerado na persistência).
    */
   @EqualsAndHashCode.Include
   private UUID code;
@@ -40,23 +35,17 @@ public class Sale {
   private UUID customerCode;
 
   /**
-   * Nome do cliente no momento da venda.
-   *
-   * <p>Usado para exibição em consultas/listagens. Pode ser preenchido no cadastro (enriquecimento).</p>
+   * Nome do cliente para exibição/consulta.
    */
   private String customerName;
 
   /**
-   * Código do vendedor responsável pela venda.
-   *
-   * <p>Como o cadastro de vendedor não faz parte do escopo por enquanto, este campo pode ser opcional.</p>
+   * Código do vendedor (associação futura).
    */
   private String sellerCode;
 
   /**
-   * Itens vendidos.
-   *
-   * <p>Cada item contém produto, quantidade e valor unitário.</p>
+   * Itens vendidos (quantidade e valor unitário congelado).
    */
   private List<SaleItem> items;
 
@@ -66,46 +55,37 @@ public class Sale {
   private PaymentMethod paymentMethod;
 
   /**
-   * Valor pago em dinheiro (quando {@link #paymentMethod} = {@link PaymentMethod#CASH}).
+   * Valor pago em dinheiro (apenas para {@link PaymentMethod#CASH}).
    */
   private BigDecimal cashPaidAmount;
 
   /**
-   * Número do cartão (quando {@link #paymentMethod} = {@link PaymentMethod#CREDIT_CARD}).
+   * Número do cartão (apenas para {@link PaymentMethod#CREDIT_CARD}).
    */
   private String cardNumber;
 
   /**
-   * Imposto fixo sobre a venda, calculado em 9% do total de produtos.
+   * Imposto fixo (9% do total de produtos).
    */
   private BigDecimal taxAmount;
 
   /**
-   * Total dos produtos.
-   *
-   * <p>Calculado como a soma de (quantidade * valor unitário) de cada item.</p>
-   *
-   * <p>Exemplo: item A (2 * 10.00) + item B (1 * 5.00) = 25.00.</p>
+   * Total dos produtos (soma de quantidade * valor unitário por item).
    */
   private BigDecimal productsTotal;
 
   /**
-   * Total final da venda (total dos produtos + imposto).
+   * Total final da venda (produtos + imposto).
    */
   private BigDecimal saleTotal;
 
   /**
-   * Data e hora de cadastro da venda.
-   *
-   * <p>Representa o momento em que a venda foi registrada no sistema. Quando não informada,
-   * é definida no cadastro.</p>
+   * Data/hora de cadastro (definida pelo sistema).
    */
   private LocalDateTime createdAt;
 
   /**
-   * Data e hora da última atualização da venda.
-   *
-   * <p>É atualizada automaticamente na persistência a cada alteração do registro.</p>
+   * Data/hora da última atualização (definida na persistência).
    */
   private LocalDateTime updatedAt;
 }
