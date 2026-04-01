@@ -19,6 +19,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -120,8 +121,8 @@ class CustomerServiceTest {
     final var result = service.create(customer);
 
     assertSame(created, result);
-    verify(repository, never()).existsByCpf(org.mockito.ArgumentMatchers.anyString());
-    verify(repository, never()).existsByEmail(org.mockito.ArgumentMatchers.anyString());
+    verify(repository, never()).existsByCpf(anyString());
+    verify(repository, never()).existsByEmail(anyString());
     verify(repository).save(customer);
   }
 
@@ -235,7 +236,7 @@ class CustomerServiceTest {
     assertSame(existing, result);
     assertEquals("New Name", existing.getFullName());
     assertEquals("old@b.com", existing.getEmail());
-    verify(repository, never()).existsByEmail(org.mockito.ArgumentMatchers.anyString());
+    verify(repository, never()).existsByEmail(anyString());
     verify(repository).update(existing);
   }
 
@@ -287,7 +288,11 @@ class CustomerServiceTest {
   @Test
   void findByCode_whenCustomerExists_shouldReturnCustomer() {
     final var code = UUID.randomUUID();
-    final var customer = Customer.builder().code(code).build();
+
+    final var customer = Customer.builder()
+        .code(code)
+        .build();
+
     when(repository.findByCode(code)).thenReturn(Optional.of(customer));
 
     final var result = service.findByCode(code);
@@ -301,10 +306,16 @@ class CustomerServiceTest {
    */
   @Test
   void findAll_shouldReturnAllCustomers() {
-    final var customers = List.of(
-        Customer.builder().code(UUID.randomUUID()).build(),
-        Customer.builder().code(UUID.randomUUID()).build()
-    );
+    final var customerA = Customer.builder()
+        .code(UUID.randomUUID())
+        .build();
+
+    final var customerB = Customer.builder()
+        .code(UUID.randomUUID())
+        .build();
+
+    final var customers = List.of(customerA, customerB);
+
     when(repository.findAll()).thenReturn(customers);
 
     final var result = service.findAll();
